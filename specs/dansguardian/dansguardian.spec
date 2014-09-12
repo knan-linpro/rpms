@@ -6,19 +6,21 @@
 
 Summary: Content filtering web proxy
 Name: dansguardian
-Version: 2.10.1.1
+Version: 2.12.0.3
 Release: 1%{?dist}
 License: GPLv2+
 Group: System Environment/Daemons
 URL: http://www.dansguardian.org/
 
-Source0: http://dansguardian.org/downloads/2/Stable/%{name}-%{version}.tar.gz
+Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
 Source1: dansguardian.init
 Source2: dansguardian.httpd
 Source3: dansguardian.logrotate
 
+Patch1: dansguardian-r1145-maxuploadsize-compilefix.diff
+
 # Fixes some compilation errors with gcc 4.4
-Patch1: dansguardian-gcc44.patch
+#Patch1: dansguardian-gcc44.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -48,7 +50,6 @@ MIME filtering, file extension filtering, POST filtering.
 %build
 
 %configure \
-   --disable-clamav \
    --disable-clamd \
    --enable-icap \
    --enable-kavd \
@@ -136,6 +137,11 @@ fi
 %dir %{_localstatedir}/log/%{name}
 
 %changelog
+* Thu Sep 11 2014 Erik Inge Bolsø <knan@redpill-linpro.com> - 2.12.0.3-1
+- Updated to release 2.12.0.3.
+- --disable-clamav is no longer a configure option - removed.
+- Added compile fix for maxuploadsize from dansguardian svn r1145.
+
 * Thu Jul 14 2011 Yury V. Zaytsev <yury@shurup.com> - 2.10.1.1-1
 - Synced the SPEC with Fedora Rawhide where appropriate.
 - Updated to release 2.10.1.1.
