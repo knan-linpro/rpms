@@ -1,0 +1,79 @@
+diff -ur dansguardian-2.12.0.3-old/src/ConnectionHandler.cpp dansguardian-2.12.0.3/src/ConnectionHandler.cpp
+--- dansguardian-2.12.0.3-old/src/ConnectionHandler.cpp	2014-09-12 13:18:55.000000000 +0200
++++ dansguardian-2.12.0.3/src/ConnectionHandler.cpp	2014-09-15 13:36:43.000000000 +0200
+@@ -358,8 +358,7 @@
+ 
+ 	// set a timeout as we don't want blocking 4 eva
+ 	// this also sets how long a peerconn will wait for other requests
+-	// TODO: have this value configurable
+-	header.setTimeout(120);
++	header.setTimeout(o.proxy_timeout);
+ 	docheader.setTimeout(o.proxy_timeout);
+ 
+ 	// to hold the returned page
+@@ -1309,7 +1308,7 @@
+ 					header.out(NULL, &proxysock, __DGHEADER_SENDALL, true);
+ 
+ 					// get header from proxy
+-					proxysock.checkForInput(120);
++					proxysock.checkForInput(o.proxy_timeout);
+ 					docheader.in(&proxysock, persistOutgoing);
+ 					persistProxy = docheader.isPersistent();
+ 					persistPeer  = persistOutgoing && docheader.wasPersistent();
+@@ -1358,7 +1357,7 @@
+ 					proxysock.readyForOutput(10);  // exception on timeout or error
+ 					header.out(NULL, &proxysock, __DGHEADER_SENDALL, true);  // send proxy the request
+ 					//check the response headers so we can go ssl
+-					proxysock.checkForInput(120);
++					proxysock.checkForInput(o.proxy_timeout);
+ 					docheader.in(&proxysock, persistOutgoing);
+ 					persistProxy = docheader.isPersistent();
+ 					persistPeer  = persistOutgoing && docheader.wasPersistent();
+@@ -1976,7 +1975,7 @@
+ #ifdef DGDEBUG
+ 							std::cout << dbgPeerPort << " -All parts sent upstream; retrieving response headers" << std::endl;
+ #endif
+-							proxysock.checkForInput(120);
++							proxysock.checkForInput(o.proxy_timeout);
+ 							docheader.in(&proxysock, persistOutgoing);
+ 							persistProxy = docheader.isPersistent();
+ 							persistPeer  = persistOutgoing && docheader.wasPersistent();
+@@ -2197,7 +2196,7 @@
+ 					header.out(&peerconn, &proxysock, __DGHEADER_SENDALL, true);
+ 
+ 					// get header from proxy
+-					proxysock.checkForInput(120);
++					proxysock.checkForInput(o.proxy_timeout);
+ 					docheader.in(&proxysock, persistOutgoing);
+ 					persistProxy = docheader.isPersistent();
+ 					persistPeer  = persistOutgoing && docheader.wasPersistent();
+@@ -2507,7 +2506,7 @@
+ 			if (!wasrequested) {
+ 				proxysock.readyForOutput(10);  // exceptions on error/timeout
+ 				header.out(&peerconn, &proxysock, __DGHEADER_SENDALL, true);  // exceptions on error/timeout
+-				proxysock.checkForInput(120);  // exceptions on error/timeout
++				proxysock.checkForInput(o.proxy_timeout);  // exceptions on error/timeout
+ 				docheader.in(&proxysock, persistOutgoing);  // get reply header from proxy
+ 				persistProxy = docheader.isPersistent();
+ 				persistPeer  = persistOutgoing && docheader.wasPersistent();
+@@ -3419,7 +3418,7 @@
+ {
+ 	int rc = 0;
+ 
+-	proxysock->checkForInput(120);
++	proxysock->checkForInput(o.proxy_timeout);
+ 	bool compressed = docheader->isCompressed();
+ 	if (compressed) {
+ #ifdef DGDEBUG
+diff -ur dansguardian-2.12.0.3-old/src/OptionContainer.cpp dansguardian-2.12.0.3/src/OptionContainer.cpp
+--- dansguardian-2.12.0.3-old/src/OptionContainer.cpp	2014-09-12 13:18:55.000000000 +0200
++++ dansguardian-2.12.0.3/src/OptionContainer.cpp	2014-09-15 13:44:51.000000000 +0200
+@@ -244,7 +244,7 @@
+ 			return false;
+ 		}
+                 proxy_timeout = findoptionI("proxytimeout");
+-                if (!realitycheck(proxy_timeout, 20, 100, "proxytimeout")) {
++                if (!realitycheck(proxy_timeout, 20, 86400, "proxytimeout")) {
+                        return false;
+                 }               // check its a reasonable value
+ 		max_children = findoptionI("maxchildren");

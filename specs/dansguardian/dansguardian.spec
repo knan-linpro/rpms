@@ -7,7 +7,7 @@
 Summary: Content filtering web proxy
 Name: dansguardian
 Version: 2.12.0.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2+
 Group: System Environment/Daemons
 URL: http://www.dansguardian.org/
@@ -18,6 +18,7 @@ Source2: dansguardian.httpd
 Source3: dansguardian.logrotate
 
 Patch1: dansguardian-r1145-maxuploadsize-compilefix.diff
+Patch2: dansguardian-proxytimeout-over-100s.diff
 
 # Fixes some compilation errors with gcc 4.4
 #Patch1: dansguardian-gcc44.patch
@@ -46,6 +47,7 @@ MIME filtering, file extension filtering, POST filtering.
 %prep
 %setup
 %patch1 -p1
+%patch2 -p1
 
 %build
 
@@ -137,6 +139,9 @@ fi
 %dir %{_localstatedir}/log/%{name}
 
 %changelog
+* Mon Sep 15 2014 Erik Inge Bolsø <knan@redpill-linpro.com> - 2.12.0.3-2
+- Added patch to enable proxy timeouts > 100 seconds.
+
 * Thu Sep 11 2014 Erik Inge Bolsø <knan@redpill-linpro.com> - 2.12.0.3-1
 - Updated to release 2.12.0.3.
 - --disable-clamav is no longer a configure option - removed.
