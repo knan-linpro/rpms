@@ -20,9 +20,6 @@ Source3: dansguardian.logrotate
 Patch1: dansguardian-r1145-maxuploadsize-compilefix.diff
 Patch2: dansguardian-proxytimeout-over-100s.diff
 
-# Fixes some compilation errors with gcc 4.4
-#Patch1: dansguardian-gcc44.patch
-
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: gcc-c++
