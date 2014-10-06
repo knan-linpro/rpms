@@ -1,0 +1,28 @@
+diff -ur dansguardian-2.12.0.3-old2/configs/lists/headerregexplist dansguardian-2.12.0.3/configs/lists/headerregexplist
+--- dansguardian-2.12.0.3-old2/configs/lists/headerregexplist	2012-06-01 02:42:57.000000000 +0200
++++ dansguardian-2.12.0.3/configs/lists/headerregexplist	2014-10-06 15:20:45.000000000 +0200
+@@ -7,8 +7,5 @@
+ #
+ # Headers are run through replacements line-by-line, not as a single block.
+ 
+-# "Expect:" header should be dropped because DG is HTTP/1.0 and not HTTP/1.1
+-"expect:(.*)"->""
+-
+ # Windows Live Search cookie replacement - force filtering on
+ #"cookie:(.*)&ADLT=(OFF|DEMOTE)"->"Cookie:$1&ADLT=STRICT"
+diff -ur dansguardian-2.12.0.3-old2/src/HTTPHeader.cpp dansguardian-2.12.0.3/src/HTTPHeader.cpp
+--- dansguardian-2.12.0.3-old2/src/HTTPHeader.cpp	2012-09-29 22:06:45.000000000 +0200
++++ dansguardian-2.12.0.3/src/HTTPHeader.cpp	2014-10-06 15:36:45.000000000 +0200
+@@ -770,6 +770,12 @@
+ 		{
+ 			i->assign("X-DG-IgnoreMe: removed multiple host headers\r");
+ 		}
++		// wipe expect header, we're http/1.0 and passing it through can break other proxies
++		else if (outgoing && i->startsWithLower("expect:"))
++		{
++			i->assign("X-DG-IgnoreMe: removed expect\r");
++		}
++
+ 		else if (outgoing && (puseragent == NULL) && i->startsWithLower("user-agent:"))
+ 		{
+ 			puseragent = &(*i);

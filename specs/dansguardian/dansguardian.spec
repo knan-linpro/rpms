@@ -7,7 +7,7 @@
 Summary: Content filtering web proxy
 Name: dansguardian
 Version: 2.12.0.3
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2+
 Group: System Environment/Daemons
 URL: http://www.dansguardian.org/
@@ -19,6 +19,7 @@ Source3: dansguardian.logrotate
 
 Patch1: dansguardian-r1145-maxuploadsize-compilefix.diff
 Patch2: dansguardian-proxytimeout-over-100s.diff
+Patch3: dansguardian-fix-expect.diff
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -45,6 +46,7 @@ MIME filtering, file extension filtering, POST filtering.
 %setup
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 
@@ -136,6 +138,9 @@ fi
 %dir %{_localstatedir}/log/%{name}
 
 %changelog
+* Mon Oct 6 2014 Erik Inge Bolsø <knan@redpill-linpro.com> - 2.12.0.3-3
+- Added patch to unbreak requests with Expect: 100-continue header.
+
 * Mon Sep 15 2014 Erik Inge Bolsø <knan@redpill-linpro.com> - 2.12.0.3-2
 - Added patch to enable proxy timeouts > 100 seconds.
 
